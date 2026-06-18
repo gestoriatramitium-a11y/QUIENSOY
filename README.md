@@ -31,6 +31,8 @@ La salida se genera en `dist/`, lista para Netlify.
    - Publish directory: `dist`
 4. `netlify.toml` ya incluye el redirect a `index.html` para que funcionen las rutas de la SPA.
 
+Si haces despliegue manual arrastrando la carpeta `dist`, el archivo `public/_redirects` se copia dentro de `dist` al compilar. Es importante que esté incluido para que rutas como `/jugar`, `/estadisticas` o `/ranking` no den error 404 al refrescar o al abrirlas directamente.
+
 ## Cambiar dominio
 
 El dominio provisional es:
