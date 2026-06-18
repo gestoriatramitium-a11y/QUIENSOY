@@ -11,23 +11,23 @@ export default function HowToPlay() {
       <section className="rules-list">
         <article>
           <span>1</span>
-          <p>Cada día hay un futbolista oculto igual para todos los usuarios.</p>
+          <p>Elige un tramo de edad: 10-17, 18-25, 26-35 o más de 35.</p>
         </article>
         <article>
           <span>2</span>
-          <p>Tienes 6 intentos para acertar el nombre.</p>
+          <p>Cada tramo tiene un futbolista oculto diario con nombres más reconocibles para ese público.</p>
         </article>
         <article>
           <span>3</span>
-          <p>Cada fallo desbloquea una pista nueva.</p>
+          <p>Tienes 6 intentos para acertar el nombre.</p>
         </article>
         <article>
           <span>4</span>
-          <p>Cuantas menos pistas uses, mejor puntuación obtienes.</p>
+          <p>Cada fallo desbloquea una pista nueva. También puedes ver un anuncio demo para una pista extra.</p>
         </article>
         <article>
           <span>5</span>
-          <p>Al terminar puedes compartir tu resultado y retar a tus amigos.</p>
+          <p>Cuantas menos pistas uses, mejor puntuación obtienes. Al terminar puedes compartir tu resultado.</p>
         </article>
       </section>
       <a className="primary-button" href="/jugar">

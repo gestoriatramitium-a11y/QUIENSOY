@@ -1,9 +1,11 @@
 import { SITE_URL, MAX_ATTEMPTS } from "../config/game.js";
 
 export function buildShareText(result) {
+  const category = result?.ageGroupLabel ? `Categoría: ${result.ageGroupLabel}\n` : "";
+
   if (result?.won) {
     return `¿Quién Soy? Fútbol ⚽
-Jugador de hoy: ✅ en ${result.attempts}/${MAX_ATTEMPTS}
+${category}Jugador de hoy: ✅ en ${result.attempts}/${MAX_ATTEMPTS}
 ${"🟩".repeat(result.attempts)}${"⬜".repeat(MAX_ATTEMPTS - result.attempts)}
 ¿Puedes superarme?
 
@@ -11,7 +13,7 @@ ${SITE_URL}`;
   }
 
   return `¿Quién Soy? Fútbol ⚽
-Jugador de hoy: ❌ ${MAX_ATTEMPTS}/${MAX_ATTEMPTS}
+${category}Jugador de hoy: ❌ ${MAX_ATTEMPTS}/${MAX_ATTEMPTS}
 ${"🟥".repeat(MAX_ATTEMPTS)}
 Mañana lo intento otra vez.
 

@@ -9,6 +9,7 @@ export default function ResultCard({ result, onShared }) {
   return (
     <section className={`result-card ${result.won ? "result-card--win" : "result-card--loss"}`}>
       <p className="eyebrow">Resultado final</p>
+      {result.ageGroupLabel && <p className="result-category">Categoría: {result.ageGroupLabel}</p>}
       <h2>
         {result.won
           ? `¡Correcto! Lo has adivinado en ${result.attempts} intentos.`

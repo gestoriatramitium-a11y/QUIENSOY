@@ -1,20 +1,31 @@
+import { useState } from "react";
 import AdBanner from "../components/AdBanner.jsx";
+import AgeGroupSelector from "../components/AgeGroupSelector.jsx";
 import InternalAdBanner from "../components/InternalAdBanner.jsx";
 import Disclaimer from "../components/Disclaimer.jsx";
+import { getAgeGroup } from "../config/ageGroups.js";
 import { getDailyPlayer, getTimeToNextChallenge } from "../utils/datePlayer.js";
+import { getPreferredAgeGroup, savePreferredAgeGroup } from "../utils/storage.js";
 
 export default function Home() {
-  const player = getDailyPlayer();
+  const [ageGroupId, setAgeGroupId] = useState(() => getPreferredAgeGroup());
+  const ageGroup = getAgeGroup(ageGroupId);
+  const player = getDailyPlayer(new Date(), ageGroupId);
+
+  function handleAgeGroupChange(nextAgeGroupId) {
+    setAgeGroupId(nextAgeGroupId);
+    savePreferredAgeGroup(nextAgeGroupId);
+  }
 
   return (
     <div className="page">
       <AdBanner placement="top" />
       <section className="hero">
         <div className="hero-content">
-          <p className="eyebrow">Reto diario</p>
+          <p className="eyebrow">Reto diario por edades</p>
           <h1>¿Quién Soy? Fútbol</h1>
           <p className="hero-lead">
-            Adivina el futbolista oculto de hoy con el menor número de pistas posible.
+            Adivina el futbolista oculto de hoy con pistas adaptadas al grupo de edad que elijas.
           </p>
           <div className="hero-actions">
             <a className="primary-button" href="/jugar">
@@ -33,12 +44,16 @@ export default function Home() {
         </div>
       </section>
 
+      <AgeGroupSelector selectedAgeGroupId={ageGroupId} onChange={handleAgeGroupChange} />
+
       <section className="daily-strip">
         <div>
           <p className="eyebrow">Jugador de hoy</p>
-          <h2>Reto activo</h2>
+          <h2>Reto activo · {ageGroup.shortTitle}</h2>
         </div>
-        <p>Nuevo reto en {getTimeToNextChallenge()} · Dificultad {player.dificultad}</p>
+        <p>
+          Nuevo reto en {getTimeToNextChallenge()} · Dificultad {player.dificultad} · {ageGroup.difficultyLabel}
+        </p>
       </section>
 
       <InternalAdBanner placement="home" />
@@ -49,8 +64,8 @@ export default function Home() {
           <p>Un reto rápido para abrir en el móvil, jugar en pocos minutos y volver al día siguiente.</p>
         </article>
         <article>
-          <h2>Adivina futbolistas con pistas</h2>
-          <p>Cada fallo desbloquea una pista nueva. Cuantas menos pistas uses, mejor puntuación.</p>
+          <h2>Jugadores por edad</h2>
+          <p>Elige 10-17, 18-25, 26-35 o más de 35 para recibir futbolistas más reconocibles.</p>
         </article>
         <article>
           <h2>Reto para compartir con amigos</h2>
@@ -58,7 +73,7 @@ export default function Home() {
         </article>
         <article>
           <h2>Vuelve cada día</h2>
-          <p>El futbolista se elige según la fecha, así todos juegan el mismo desafío diario.</p>
+          <p>Cada tramo tiene su propio jugador diario, así puedes jugar en familia sin frustrarte.</p>
         </article>
       </section>
 

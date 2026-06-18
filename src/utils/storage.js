@@ -1,6 +1,8 @@
+import { DEFAULT_AGE_GROUP_ID, getAgeGroup } from "../config/ageGroups.js";
 import { getScore } from "./scoring.js";
 
 const STATS_KEY = "quienSoyFutbolStats";
+const AGE_GROUP_KEY = "quienSoyFutbolAgeGroup";
 const DAILY_PREFIX = "quienSoyFutbolDaily:";
 
 export const defaultStats = {
@@ -34,6 +36,18 @@ export function saveStats(stats) {
   localStorage.setItem(STATS_KEY, JSON.stringify(stats));
 }
 
+export function getPreferredAgeGroup() {
+  try {
+    return localStorage.getItem(AGE_GROUP_KEY) || DEFAULT_AGE_GROUP_ID;
+  } catch {
+    return DEFAULT_AGE_GROUP_ID;
+  }
+}
+
+export function savePreferredAgeGroup(ageGroupId) {
+  localStorage.setItem(AGE_GROUP_KEY, getAgeGroup(ageGroupId).id);
+}
+
 export function resetStats() {
   localStorage.removeItem(STATS_KEY);
   Object.keys(localStorage)
@@ -41,22 +55,30 @@ export function resetStats() {
     .forEach((key) => localStorage.removeItem(key));
 }
 
-export function getDailyResult(dateKey) {
+function getDailyKey(dateKey, ageGroupId = DEFAULT_AGE_GROUP_ID) {
+  return `${DAILY_PREFIX}${dateKey}:${getAgeGroup(ageGroupId).id}`;
+}
+
+export function getDailyResult(dateKey, ageGroupId = DEFAULT_AGE_GROUP_ID) {
   try {
-    return JSON.parse(localStorage.getItem(`${DAILY_PREFIX}${dateKey}`) || "null");
+    return JSON.parse(localStorage.getItem(getDailyKey(dateKey, ageGroupId)) || "null");
   } catch {
     return null;
   }
 }
 
-export function saveDailyResult(dateKey, result) {
-  localStorage.setItem(`${DAILY_PREFIX}${dateKey}`, JSON.stringify(result));
+export function saveDailyResult(dateKey, ageGroupId, result) {
+  localStorage.setItem(getDailyKey(dateKey, ageGroupId), JSON.stringify(result));
 }
 
-export function recordFinishedGame({ dateKey, player, attempts, won }) {
+export function recordFinishedGame({ dateKey, ageGroupId = DEFAULT_AGE_GROUP_ID, player, attempts, won }) {
+  const ageGroup = getAgeGroup(ageGroupId);
   const score = getScore(attempts, won);
+  const statsDateKey = `${dateKey}:${ageGroup.id}`;
   const result = {
     dateKey,
+    ageGroupId: ageGroup.id,
+    ageGroupLabel: ageGroup.shortTitle,
     playerId: player.id,
     playerName: player.nombre,
     attempts,
@@ -65,10 +87,10 @@ export function recordFinishedGame({ dateKey, player, attempts, won }) {
     completedAt: new Date().toISOString()
   };
 
-  saveDailyResult(dateKey, result);
+  saveDailyResult(dateKey, ageGroup.id, result);
 
   const stats = getStats();
-  if (stats.lastPlayedDate === dateKey) return result;
+  if (stats.lastPlayedDate === statsDateKey) return result;
 
   const nextStats = {
     ...stats,
@@ -76,7 +98,7 @@ export function recordFinishedGame({ dateKey, player, attempts, won }) {
     wins: stats.wins + (won ? 1 : 0),
     losses: stats.losses + (won ? 0 : 1),
     currentStreak: won ? stats.currentStreak + 1 : 0,
-    lastPlayedDate: dateKey,
+    lastPlayedDate: statsDateKey,
     lastResult: result,
     guessDistribution: {
       ...defaultStats.guessDistribution,

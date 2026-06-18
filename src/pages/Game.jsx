@@ -1,15 +1,22 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import AdBanner from "../components/AdBanner.jsx";
+import AgeGroupSelector from "../components/AgeGroupSelector.jsx";
 import GameCard from "../components/GameCard.jsx";
 import GuessInput from "../components/GuessInput.jsx";
 import HintList from "../components/HintList.jsx";
 import ResultCard from "../components/ResultCard.jsx";
 import InterstitialAd from "../components/InterstitialAd.jsx";
 import RewardedAdModal from "../components/RewardedAdModal.jsx";
+import { getAgeGroup } from "../config/ageGroups.js";
 import { DEV_ALLOW_REPLAY, MAX_ATTEMPTS } from "../config/game.js";
 import { getDailyPlayer, getTimeToNextChallenge, getTodayKey } from "../utils/datePlayer.js";
 import { isCloseGuess } from "../utils/normalizeText.js";
-import { getDailyResult, recordFinishedGame } from "../utils/storage.js";
+import {
+  getDailyResult,
+  getPreferredAgeGroup,
+  recordFinishedGame,
+  savePreferredAgeGroup
+} from "../utils/storage.js";
 
 const extraHelpers = [
   { label: "Liga", getValue: (player) => player.liga },
@@ -21,35 +28,68 @@ const extraHelpers = [
   }
 ];
 
+function getInitialState(dateKey, ageGroupId) {
+  const player = getDailyPlayer(new Date(), ageGroupId);
+  const savedResult = !DEV_ALLOW_REPLAY ? getDailyResult(dateKey, ageGroupId) : null;
+
+  return {
+    player,
+    result: savedResult,
+    attempts: savedResult?.attempts || 0,
+    visibleHints: savedResult ? MAX_ATTEMPTS : 1,
+    message: savedResult ? "Ya completaste el reto de hoy en esta categoría." : "Primera pista desbloqueada.",
+    revealedExtra: []
+  };
+}
+
 export default function Game() {
-  const player = useMemo(() => getDailyPlayer(), []);
   const dateKey = useMemo(() => getTodayKey(), []);
-  const savedResult = !DEV_ALLOW_REPLAY ? getDailyResult(dateKey) : null;
-  const [result, setResult] = useState(savedResult);
-  const [attempts, setAttempts] = useState(savedResult?.attempts || 0);
-  const [visibleHints, setVisibleHints] = useState(savedResult ? MAX_ATTEMPTS : 1);
-  const [message, setMessage] = useState(savedResult ? "Ya completaste el reto de hoy." : "Primera pista desbloqueada.");
-  const [revealedExtra, setRevealedExtra] = useState([]);
+  const [ageGroupId, setAgeGroupId] = useState(() => getPreferredAgeGroup());
+  const [state, setState] = useState(() => getInitialState(dateKey, getPreferredAgeGroup()));
   const [interstitialOpen, setInterstitialOpen] = useState(false);
   const [rewardedOpen, setRewardedOpen] = useState(false);
 
-  const completed = Boolean(result);
-  const progress = Math.min(100, (attempts / MAX_ATTEMPTS) * 100);
+  const ageGroup = getAgeGroup(ageGroupId);
+  const completed = Boolean(state.result);
+  const progress = Math.min(100, (state.attempts / MAX_ATTEMPTS) * 100);
+
+  useEffect(() => {
+    savePreferredAgeGroup(ageGroupId);
+    setState(getInitialState(dateKey, ageGroupId));
+    setRewardedOpen(false);
+    setInterstitialOpen(false);
+  }, [ageGroupId, dateKey]);
 
   function finishGame(nextAttempts, won) {
-    const finalResult = recordFinishedGame({ dateKey, player, attempts: nextAttempts, won });
-    setResult(finalResult);
-    setVisibleHints(MAX_ATTEMPTS);
-    setMessage(won ? `¡Correcto! Lo has adivinado en ${nextAttempts} intentos.` : `No era fácil. El jugador era: ${player.nombre}.`);
+    const finalResult = recordFinishedGame({
+      dateKey,
+      ageGroupId,
+      player: state.player,
+      attempts: nextAttempts,
+      won
+    });
+
+    setState((current) => ({
+      ...current,
+      result: finalResult,
+      visibleHints: MAX_ATTEMPTS,
+      message: won
+        ? `¡Correcto! Lo has adivinado en ${nextAttempts} intentos.`
+        : `No era fácil. El jugador era: ${current.player.nombre}.`
+    }));
     setInterstitialOpen(true);
   }
 
   function handleGuess(value) {
     if (completed) return;
-    const nextAttempts = attempts + 1;
-    setAttempts(nextAttempts);
+    const nextAttempts = state.attempts + 1;
 
-    if (isCloseGuess(value, player.nombre)) {
+    setState((current) => ({
+      ...current,
+      attempts: nextAttempts
+    }));
+
+    if (isCloseGuess(value, state.player.nombre)) {
       finishGame(nextAttempts, true);
       return;
     }
@@ -59,15 +99,21 @@ export default function Game() {
       return;
     }
 
-    setVisibleHints(Math.min(MAX_ATTEMPTS, nextAttempts + 1));
-    setMessage("No es. Se ha desbloqueado una pista nueva.");
+    setState((current) => ({
+      ...current,
+      visibleHints: Math.min(MAX_ATTEMPTS, nextAttempts + 1),
+      message: "No es. Se ha desbloqueado una pista nueva."
+    }));
   }
 
   function unlockReward() {
-    const nextHelper = extraHelpers.find((helper) => !revealedExtra.some((item) => item.label === helper.label));
+    const nextHelper = extraHelpers.find((helper) => !state.revealedExtra.some((item) => item.label === helper.label));
     if (nextHelper) {
-      setRevealedExtra([...revealedExtra, { label: nextHelper.label, value: nextHelper.getValue(player) }]);
-      setMessage(`Pista extra desbloqueada: ${nextHelper.label}.`);
+      setState((current) => ({
+        ...current,
+        revealedExtra: [...current.revealedExtra, { label: nextHelper.label, value: nextHelper.getValue(current.player) }],
+        message: `Pista extra desbloqueada: ${nextHelper.label}.`
+      }));
     }
     setRewardedOpen(false);
   }
@@ -79,25 +125,30 @@ export default function Game() {
         <div className="game-main">
           <div className="game-topline">
             <div>
-              <p className="eyebrow">Reto diario</p>
+              <p className="eyebrow">Reto diario · {ageGroup.shortTitle}</p>
               <h1>Jugador oculto</h1>
             </div>
             <div className="attempt-counter">
-              {attempts}/{MAX_ATTEMPTS} intentos
+              {state.attempts}/{MAX_ATTEMPTS} intentos
             </div>
           </div>
+
+          <AgeGroupSelector selectedAgeGroupId={ageGroupId} onChange={setAgeGroupId} compact />
+
           <div className="progress-track">
             <span style={{ width: `${progress}%` }} />
           </div>
 
-          {result?.won && <div className="confetti" aria-hidden="true" />}
+          {state.result?.won && <div className="confetti" aria-hidden="true" />}
 
-          <GameCard player={player} revealedExtra={revealedExtra} />
-          <p className={`game-message ${message.startsWith("No") ? "game-message--error" : ""}`}>{message}</p>
+          <GameCard player={state.player} revealedExtra={state.revealedExtra} />
+          <p className={`game-message ${state.message.startsWith("No") ? "game-message--error" : ""}`}>
+            {state.message}
+          </p>
 
           {!completed && (
             <>
-              <HintList hints={player.pistas} visibleCount={visibleHints} />
+              <HintList hints={state.player.pistas} visibleCount={state.visibleHints} />
               <GuessInput disabled={completed} onGuess={handleGuess} />
               <button className="reward-button" type="button" onClick={() => setRewardedOpen(true)}>
                 Ver anuncio para desbloquear una pista extra
@@ -107,7 +158,7 @@ export default function Game() {
 
           {completed && (
             <ResultCard
-              result={result}
+              result={state.result}
               onShared={() => {
                 setInterstitialOpen(true);
               }}

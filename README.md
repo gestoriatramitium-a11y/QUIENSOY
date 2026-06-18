@@ -106,7 +106,14 @@ Las estadísticas se guardan en `localStorage`:
 - distribución de intentos
 - puntuación total
 
-El jugador diario se elige de forma determinista según la fecha en `src/utils/datePlayer.js`, sin backend.
+El jugador diario se elige de forma determinista según la fecha y el tramo de edad en `src/utils/datePlayer.js`, sin backend. Los tramos se editan en `src/config/ageGroups.js`.
+
+Tramos actuales:
+
+- 10-17 años: jugadores muy actuales y conocidos por niños/adolescentes.
+- 18-25 años: estrellas actuales y cracks recientes.
+- 26-35 años: mezcla de actuales y nombres de los 2000/2010.
+- Más de 35: clásicos y leyendas.
 
 ## Modo desarrollo
 
