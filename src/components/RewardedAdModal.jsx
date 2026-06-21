@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
-import InternalAdBanner from "./InternalAdBanner.jsx";
 
 export default function RewardedAdModal({ open, onReward, onCancel }) {
-  const [seconds, setSeconds] = useState(5);
+  const [seconds, setSeconds] = useState(3);
 
   useEffect(() => {
     if (!open) return undefined;
-    setSeconds(5);
+    setSeconds(3);
     const interval = window.setInterval(() => {
       setSeconds((value) => Math.max(0, value - 1));
     }, 1000);
@@ -16,18 +15,17 @@ export default function RewardedAdModal({ open, onReward, onCancel }) {
   if (!open) return null;
 
   return (
-    <div className="modal-backdrop" role="dialog" aria-modal="true" aria-label="Ver publicidad para obtener una pista">
+    <div className="modal-backdrop" role="dialog" aria-modal="true" aria-label="Extra clue">
       <div className="modal-card">
-        <p className="eyebrow">Publicidad</p>
-        <h2>Ver publicidad para obtener una pista</h2>
-        <p className="muted">Tras la cuenta atrás se desbloqueará una ayuda útil para este reto.</p>
-        <InternalAdBanner placement="rewarded" />
+        <p className="eyebrow">Extra clue</p>
+        <h2>Get one extra clue</h2>
+        <p className="muted">CrazyGames SDK-ready rewarded flow. No external banner or commercial link is shown.</p>
         <div className="modal-actions">
           <button className="ghost-button" type="button" onClick={onCancel}>
-            Cancelar
+            Cancel
           </button>
           <button className="primary-button" type="button" onClick={onReward} disabled={seconds > 0}>
-            {seconds > 0 ? `Desbloquear en ${seconds}` : "Desbloquear pista"}
+            {seconds > 0 ? `Unlock in ${seconds}` : "Unlock clue"}
           </button>
         </div>
       </div>

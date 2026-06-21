@@ -1,11 +1,11 @@
 export const PLATFORM_CONFIG = {
-  platform: "web", // "web" | "crazygames"
-  enableExternalBanners: true,
-  enableInternalAds: true,
+  platform: "crazygames", // "web" | "crazygames"
+  enableExternalBanners: false,
+  enableInternalAds: false,
   enableCrazyGamesSdk: false,
-  defaultLanguage: "auto",
+  defaultLanguage: "en",
   forceEnglishForCrazyGames: true,
-  showSeoPages: true,
+  showSeoPages: false,
   showShareButtons: true
 };
 

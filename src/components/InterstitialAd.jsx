@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
-import InternalAdBanner from "./InternalAdBanner.jsx";
 
 export default function InterstitialAd({ open, onClose }) {
-  const [seconds, setSeconds] = useState(5);
+  const [seconds, setSeconds] = useState(3);
 
   useEffect(() => {
     if (!open) return undefined;
-    setSeconds(5);
+    setSeconds(3);
     const interval = window.setInterval(() => {
       setSeconds((value) => Math.max(0, value - 1));
     }, 1000);
@@ -16,16 +15,13 @@ export default function InterstitialAd({ open, onClose }) {
   if (!open) return null;
 
   return (
-    <div className="modal-backdrop" role="dialog" aria-modal="true" aria-label="Publicidad">
+    <div className="modal-backdrop" role="dialog" aria-modal="true" aria-label="Game break">
       <div className="modal-card">
-        <p className="eyebrow">Publicidad</p>
-        <h2>Tu juego continuará en unos segundos</h2>
-        <p className="muted">
-          Este interstitial es un placeholder transparente hasta conectar una red publicitaria real.
-        </p>
-        <InternalAdBanner placement="interstitial" />
+        <p className="eyebrow">Game break</p>
+        <h2>Your game will continue in a moment</h2>
+        <p className="muted">SDK-ready pause. No external banner is shown in the CrazyGames version.</p>
         <button className="primary-button" type="button" onClick={onClose} disabled={seconds > 0}>
-          {seconds > 0 ? `Continuar en ${seconds}` : "Continuar"}
+          {seconds > 0 ? `Continue in ${seconds}` : "Continue"}
         </button>
       </div>
     </div>
