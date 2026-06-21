@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useI18n } from "../i18n/useI18n.js";
 
 export default function GuessInput({ disabled, onGuess }) {
-  const { t } = useI18n();
+  const { language, t } = useI18n();
   const [value, setValue] = useState("");
 
   function handleSubmit(event) {
@@ -21,7 +21,7 @@ export default function GuessInput({ disabled, onGuess }) {
           type="text"
           value={value}
           onChange={(event) => setValue(event.target.value)}
-          placeholder="Ej: Mbappe"
+          placeholder={language === "es" ? "Ej: Mbappe" : "E.g. Mbappe"}
           autoComplete="off"
           disabled={disabled}
         />

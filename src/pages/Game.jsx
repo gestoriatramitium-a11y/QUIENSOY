@@ -10,6 +10,7 @@ import InterstitialAd from "../components/InterstitialAd.jsx";
 import RewardedAdModal from "../components/RewardedAdModal.jsx";
 import { getAgeGroup } from "../config/ageGroups.js";
 import { DEV_ALLOW_REPLAY, GAME_CONFIG, MAX_ATTEMPTS } from "../config/game.js";
+import { getLocalizedClues, translateExtraLabel, translateQuickLevel } from "../i18n/gameText.js";
 import { useI18n } from "../i18n/useI18n.js";
 import { getTimeToNextChallenge, getTodayKey } from "../utils/datePlayer.js";
 import { findBestMatch } from "../utils/fuzzyMatch.js";
@@ -278,7 +279,7 @@ export default function Game() {
         points: nextPoints,
         finishedRounds: nextRounds,
         result,
-        message: `${copy.quickFinished} ${getQuickLevel(nextCorrect)}.`
+        message: `${copy.quickFinished} ${translateQuickLevel(getQuickLevel(nextCorrect), language)}.`
       }));
       setInterstitialOpen(true);
       playSound("finish");
@@ -415,12 +416,20 @@ export default function Game() {
         ...current,
         timeLeft: mode.timeAttack ? Math.max(0, current.timeLeft - 3) : current.timeLeft,
         revealedExtra: [...current.revealedExtra, helper],
-        message: `${copy.extraHelp} ${helper.label}.`
+        message: `${copy.extraHelp} ${translateExtraLabel(helper.label, language)}.`
       }));
     } else if (isQuick) {
-      setQuick((current) => ({ ...current, revealedExtra: [...current.revealedExtra, helper], message: `${copy.extraHelp} ${helper.label}.` }));
+      setQuick((current) => ({
+        ...current,
+        revealedExtra: [...current.revealedExtra, helper],
+        message: `${copy.extraHelp} ${translateExtraLabel(helper.label, language)}.`
+      }));
     } else {
-      setSingle((current) => ({ ...current, revealedExtra: [...current.revealedExtra, helper], message: `${copy.extraHelp} ${helper.label}.` }));
+      setSingle((current) => ({
+        ...current,
+        revealedExtra: [...current.revealedExtra, helper],
+        message: `${copy.extraHelp} ${translateExtraLabel(helper.label, language)}.`
+      }));
     }
     setRewardedOpen(false);
   }
@@ -458,7 +467,7 @@ export default function Game() {
             <span style={{ width: `${progress}%` }} />
           </div>
 
-          <GameCard player={currentItem} revealedExtra={revealedExtra} modeLabel={mode.shortLabel} />
+          <GameCard player={currentItem} revealedExtra={revealedExtra} modeLabel={getShortModeLabel(mode.id, language, mode.shortLabel)} />
           <p className={`game-message ${message?.startsWith("No") || message?.startsWith("Fallaste") ? "game-message--error" : ""}`}>
             {message}
           </p>
@@ -475,7 +484,7 @@ export default function Game() {
 
           {!completed && (
             <>
-              <HintList hints={currentItem.pistas.slice(0, maxHints)} visibleCount={visibleHints} />
+              <HintList hints={getLocalizedClues(currentItem, language).slice(0, maxHints)} visibleCount={visibleHints} />
               <GuessInput disabled={completed || Boolean(suggestion)} onGuess={handleGuess} />
               <button className="reward-button" type="button" onClick={() => setRewardedOpen(true)}>
                 {copy.extraClue}
@@ -605,6 +614,34 @@ function getModeLabel(modeId, language, fallback) {
       "clubes-europeos": "European Clubs",
       entrenamiento: "Practice",
       "especial-semana": "Weekly Special"
+    }
+  };
+  return labels[language]?.[modeId] || fallback;
+}
+
+function getShortModeLabel(modeId, language, fallback) {
+  const labels = {
+    es: {
+      diario: "Diario",
+      rapido: "Rapido",
+      supervivencia: "Supervivencia",
+      contrarreloj: "Contrarreloj",
+      "liga-espanola": "LaLiga",
+      mundiales: "Mundiales",
+      "clubes-europeos": "Clubes",
+      entrenamiento: "Entreno",
+      "especial-semana": "Especial"
+    },
+    en: {
+      diario: "Daily",
+      rapido: "Quick",
+      supervivencia: "Survival",
+      contrarreloj: "Time Attack",
+      "liga-espanola": "LaLiga",
+      mundiales: "World Cup",
+      "clubes-europeos": "Clubs",
+      entrenamiento: "Practice",
+      "especial-semana": "Special"
     }
   };
   return labels[language]?.[modeId] || fallback;

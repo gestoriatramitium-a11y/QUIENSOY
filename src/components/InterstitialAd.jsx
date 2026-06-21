@@ -1,6 +1,28 @@
 import { useEffect, useState } from "react";
+import { useI18n } from "../i18n/useI18n.js";
+
+const COPY = {
+  es: {
+    aria: "Pausa del juego",
+    eyebrow: "Pausa del juego",
+    title: "Tu partida continuara en un momento",
+    description: "Pausa preparada para SDK. No se muestra banner externo en la version CrazyGames.",
+    continueIn: "Continuar en",
+    continue: "Continuar"
+  },
+  en: {
+    aria: "Game break",
+    eyebrow: "Game break",
+    title: "Your game will continue in a moment",
+    description: "SDK-ready pause. No external banner is shown in the CrazyGames version.",
+    continueIn: "Continue in",
+    continue: "Continue"
+  }
+};
 
 export default function InterstitialAd({ open, onClose }) {
+  const { language } = useI18n();
+  const copy = COPY[language] || COPY.en;
   const [seconds, setSeconds] = useState(3);
 
   useEffect(() => {
@@ -15,13 +37,13 @@ export default function InterstitialAd({ open, onClose }) {
   if (!open) return null;
 
   return (
-    <div className="modal-backdrop" role="dialog" aria-modal="true" aria-label="Game break">
+    <div className="modal-backdrop" role="dialog" aria-modal="true" aria-label={copy.aria}>
       <div className="modal-card">
-        <p className="eyebrow">Game break</p>
-        <h2>Your game will continue in a moment</h2>
-        <p className="muted">SDK-ready pause. No external banner is shown in the CrazyGames version.</p>
+        <p className="eyebrow">{copy.eyebrow}</p>
+        <h2>{copy.title}</h2>
+        <p className="muted">{copy.description}</p>
         <button className="primary-button" type="button" onClick={onClose} disabled={seconds > 0}>
-          {seconds > 0 ? `Continue in ${seconds}` : "Continue"}
+          {seconds > 0 ? `${copy.continueIn} ${seconds}` : copy.continue}
         </button>
       </div>
     </div>
