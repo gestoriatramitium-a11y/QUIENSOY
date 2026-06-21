@@ -18,9 +18,9 @@ export default function RewardedAdModal({ open, onReward, onCancel }) {
   return (
     <div className="modal-backdrop" role="dialog" aria-modal="true" aria-label="Ver publicidad para obtener una pista">
       <div className="modal-card">
-        <p className="eyebrow">Pista extra</p>
+        <p className="eyebrow">Publicidad</p>
         <h2>Ver publicidad para obtener una pista</h2>
-        <p className="muted">Tras la cuenta atrás se desbloqueará una ayuda del jugador oculto.</p>
+        <p className="muted">Tras la cuenta atrás se desbloqueará una ayuda útil para este reto.</p>
         <InternalAdBanner placement="rewarded" />
         <div className="modal-actions">
           <button className="ghost-button" type="button" onClick={onCancel}>

@@ -4,35 +4,55 @@ import AgeGroupSelector from "../components/AgeGroupSelector.jsx";
 import InternalAdBanner from "../components/InternalAdBanner.jsx";
 import Disclaimer from "../components/Disclaimer.jsx";
 import { getAgeGroup } from "../config/ageGroups.js";
+import { PLATFORM_CONFIG } from "../config/platform.js";
+import { useI18n } from "../i18n/useI18n.js";
 import { getDailyPlayer, getTimeToNextChallenge } from "../utils/datePlayer.js";
-import { getPreferredAgeGroup, savePreferredAgeGroup } from "../utils/storage.js";
+import { getModeCards, getWeeklyTheme } from "../utils/gameModes.js";
+import { getProgression, getXPProgress } from "../utils/progression.js";
+import { getPreferredAgeGroup, getStats, savePreferredAgeGroup } from "../utils/storage.js";
+
+const TUTORIAL_KEY = "quienSoyFutbolTutorialSeen";
 
 export default function Home() {
+  const { t } = useI18n();
   const [ageGroupId, setAgeGroupId] = useState(() => getPreferredAgeGroup());
+  const [showTutorial, setShowTutorial] = useState(() => localStorage.getItem(TUTORIAL_KEY) !== "true");
   const ageGroup = getAgeGroup(ageGroupId);
   const player = getDailyPlayer(new Date(), ageGroupId);
+  const stats = getStats();
+  const weekly = getWeeklyTheme();
+  const progression = getProgression();
+  const xp = getXPProgress(progression);
 
   function handleAgeGroupChange(nextAgeGroupId) {
     setAgeGroupId(nextAgeGroupId);
     savePreferredAgeGroup(nextAgeGroupId);
   }
 
+  function closeTutorial(play = false) {
+    localStorage.setItem(TUTORIAL_KEY, "true");
+    setShowTutorial(false);
+    if (play) window.location.href = "/jugar?modo=rapido";
+  }
+
   return (
-    <div className="page">
-      <AdBanner placement="top" />
-      <section className="hero">
+    <div className={`page game-menu theme-${progression.selectedTheme}`}>
+      {PLATFORM_CONFIG.platform === "web" && <AdBanner placement="top" />}
+      {showTutorial && <Tutorial t={t} onClose={closeTutorial} />}
+      <section className="hero menu-hero">
         <div className="hero-content">
-          <p className="eyebrow">Reto diario por edades</p>
-          <h1>¿Quién Soy? Fútbol</h1>
-          <p className="hero-lead">
-            Adivina el futbolista oculto de hoy con pistas adaptadas al grupo de edad que elijas.
-          </p>
+          <p className="eyebrow">{t("gameSubtitle")}</p>
+          <h1>{t("gameTitle")}</h1>
+          <p className="hero-lead">Fast football clue game with daily challenges, survival, time attack, XP and local achievements.</p>
           <div className="hero-actions">
-            <a className="primary-button" href="/jugar">
-              Jugar ahora
+            <a className="primary-button play-now-button" href="/jugar?modo=rapido">
+              {t("playNow")}
             </a>
-            <a className="ghost-button" href="/estadisticas">
-              Ver estadísticas
+            <a className="ghost-button" href="/jugar?modo=supervivencia">
+              {t("survival")}
+            </a>
+            <a className="ghost-button" href="/jugar?modo=contrarreloj">
+              {t("timeAttack")}
             </a>
           </div>
         </div>
@@ -44,53 +64,102 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="progress-card">
+        <div>
+          <p className="eyebrow">{t("level")} {progression.level}</p>
+          <h2>{progression.title}</h2>
+        </div>
+        <div className="xp-track" aria-label="XP progress">
+          <span style={{ width: `${xp.percent}%` }} />
+        </div>
+        <p>{progression.xpTotal} XP · {xp.remaining} XP para el siguiente nivel</p>
+      </section>
+
+      <section className="home-stats">
+        <article>
+          <span>Daily streak</span>
+          <strong>{stats.currentStreak}</strong>
+        </article>
+        <article>
+          <span>Total score</span>
+          <strong>{stats.totalScore}</strong>
+        </article>
+        <article>
+          <span>Weekly special</span>
+          <strong>{weekly.title}</strong>
+        </article>
+      </section>
+
+      <section className="mode-grid">
+        {getModeCards().map((mode) => (
+          <a className="mode-card" href={`/jugar?modo=${mode.id}`} key={mode.id}>
+            <span>{mode.shortLabel}</span>
+            <h2>{translateModeLabel(mode.id, t, mode.label)}</h2>
+            <p>{mode.weekly ? `Special: ${weekly.title}` : mode.description}</p>
+          </a>
+        ))}
+      </section>
+
       <AgeGroupSelector selectedAgeGroupId={ageGroupId} onChange={handleAgeGroupChange} />
 
       <section className="daily-strip">
         <div>
-          <p className="eyebrow">Jugador de hoy</p>
-          <h2>Reto activo · {ageGroup.shortTitle}</h2>
+          <p className="eyebrow">Daily player</p>
+          <h2>{t("dailyChallenge")} · {ageGroup.shortTitle}</h2>
         </div>
         <p>
-          Nuevo reto en {getTimeToNextChallenge()} · Dificultad {player.dificultad} · {ageGroup.difficultyLabel}
+          Next in {getTimeToNextChallenge()} · {player.dificultad} · {ageGroup.difficultyLabel}
         </p>
       </section>
 
-      <InternalAdBanner placement="home" />
-
-      <section className="content-grid">
-        <article>
-          <h2>Juego diario de fútbol</h2>
-          <p>Un reto rápido para abrir en el móvil, jugar en pocos minutos y volver al día siguiente.</p>
-        </article>
-        <article>
-          <h2>Jugadores por edad</h2>
-          <p>Elige 10-17, 18-25, 26-35 o más de 35 para recibir futbolistas más reconocibles.</p>
-        </article>
-        <article>
-          <h2>Reto para compartir con amigos</h2>
-          <p>Comparte tu resultado por WhatsApp, Instagram, Twitter/X o copia el texto al portapapeles.</p>
-        </article>
-        <article>
-          <h2>Vuelve cada día</h2>
-          <p>Cada tramo tiene su propio jugador diario, así puedes jugar en familia sin frustrarte.</p>
-        </article>
-      </section>
-
-      <section className="cta-band">
-        <h2>Comparte tu resultado y reta a tus amigos.</h2>
-        <a className="primary-button" href="/jugar">
-          Empezar reto
-        </a>
-      </section>
+      {PLATFORM_CONFIG.platform === "web" && <InternalAdBanner placement="home" />}
 
       <div className="quick-links">
-        <a href="/como-jugar">Cómo jugar</a>
-        <a href="/privacidad">Privacidad</a>
-        <a href="/contacto">Contacto</a>
+        <a href="/estadisticas">{t("stats")}</a>
+        <a href="/ranking">{t("ranking")}</a>
+        <a href="/ajustes">{t("settings")}</a>
+        <a href="/personalizar">{t("customize")}</a>
       </div>
       <Disclaimer />
-      <AdBanner placement="bottom" />
+      {PLATFORM_CONFIG.platform === "web" && <AdBanner placement="bottom" />}
     </div>
   );
+}
+
+function Tutorial({ t, onClose }) {
+  return (
+    <div className="modal-backdrop" role="dialog" aria-modal="true">
+      <section className="modal-card tutorial-card">
+        <p className="eyebrow">Quick tutorial</p>
+        <ol>
+          <li>{t("readClues")}</li>
+          <li>{t("typeAnswer")}</li>
+          <li>{t("useExtra")}</li>
+          <li>{t("scoreEarly")}</li>
+        </ol>
+        <div className="modal-actions">
+          <button className="ghost-button" type="button" onClick={() => onClose(false)}>
+            Skip
+          </button>
+          <button className="primary-button" type="button" onClick={() => onClose(true)}>
+            {t("gotItPlay")}
+          </button>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function translateModeLabel(modeId, t, fallback) {
+  const map = {
+    diario: "dailyChallenge",
+    rapido: "quickMatch",
+    supervivencia: "survival",
+    contrarreloj: "timeAttack",
+    "liga-espanola": "spanishLeague",
+    mundiales: "worldCup",
+    "clubes-europeos": "europeanClubs",
+    entrenamiento: "practice"
+  };
+  return map[modeId] ? t(map[modeId]) : fallback;
 }

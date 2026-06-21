@@ -1,4 +1,5 @@
 import AdBanner from "../components/AdBanner.jsx";
+import { PLATFORM_CONFIG } from "../config/platform.js";
 
 export default function Privacy() {
   return (
@@ -6,21 +7,21 @@ export default function Privacy() {
       <AdBanner placement="top" />
       <h1>Política de privacidad</h1>
       <p>
-        Este texto es orientativo y no constituye asesoramiento legal definitivo. En la primera versión de ¿Quién Soy?
-        Fútbol no se recogen datos personales ni existe backend o base de datos.
+        Este texto es orientativo y no constituye asesoramiento legal definitivo. ¿Quién Soy? Fútbol no usa login,
+        backend ni base de datos propia.
       </p>
       <p>
-        Las estadísticas del juego se guardan en el navegador mediante localStorage. Puedes borrarlas desde la página de
-        estadísticas o limpiando los datos del navegador.
+        Las estadísticas, idioma, progreso, nivel, logros, ajustes, sonido, vibración y cosméticos se guardan en el
+        navegador mediante localStorage. Puedes borrar esos datos desde Ajustes o limpiando los datos del navegador.
       </p>
       <p>
-        La web muestra banners internos propios para FacturaRadar, IARadar y Tramitium. En el futuro podría incluir
-        publicidad de terceros como Google AdSense, AdSense H5 Games Ads, AdinPlay, CrazyGames, GameDistribution u otras
-        redes.
+        En versión web se pueden mostrar banners internos propios de FacturaRadar, IARadar y Tramitium. En versión
+        CrazyGames, la configuración está preparada para ocultar banners externos y usar una integración de plataforma
+        cuando se conecte el SDK oficial.
       </p>
       <p>
-        Si se activa publicidad de terceros, podrían usarse cookies o identificadores según las políticas de cada
-        proveedor. Esta página deberá actualizarse antes de activar esas integraciones.
+        Plataforma actual configurada: <strong>{PLATFORM_CONFIG.platform}</strong>. Si en el futuro se activa publicidad
+        de terceros o SDK real, habrá que revisar cookies, consentimiento y políticas de cada proveedor.
       </p>
       <AdBanner placement="bottom" />
     </div>

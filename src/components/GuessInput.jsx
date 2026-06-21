@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useI18n } from "../i18n/useI18n.js";
 
 export default function GuessInput({ disabled, onGuess }) {
+  const { t } = useI18n();
   const [value, setValue] = useState("");
 
   function handleSubmit(event) {
@@ -12,7 +14,7 @@ export default function GuessInput({ disabled, onGuess }) {
 
   return (
     <form className="guess-form" onSubmit={handleSubmit}>
-      <label htmlFor="guess">Escribe el nombre del futbolista</label>
+      <label htmlFor="guess">{t("typeAnswer")}</label>
       <div className="guess-row">
         <input
           id="guess"
@@ -24,7 +26,7 @@ export default function GuessInput({ disabled, onGuess }) {
           disabled={disabled}
         />
         <button className="primary-button" type="submit" disabled={disabled || !value.trim()}>
-          Probar
+          {t("guess")}
         </button>
       </div>
     </form>

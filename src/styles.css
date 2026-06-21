@@ -376,6 +376,144 @@ main {
   margin: 22px 0;
 }
 
+.home-stats,
+.mode-grid,
+.mode-stats-grid,
+.achievements-grid,
+.practice-config {
+  display: grid;
+  gap: 12px;
+  margin: 18px 0;
+}
+
+.home-stats article,
+.mode-card,
+.mode-stat-card,
+.achievement,
+.suggestion-box {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 16px;
+  background: rgba(16, 32, 24, 0.76);
+}
+
+.home-stats span,
+.mode-card span,
+.mode-stat-card span,
+.achievement span {
+  color: var(--muted);
+}
+
+.home-stats strong,
+.mode-stat-card strong {
+  color: var(--gold);
+  font-size: 1.4rem;
+}
+
+.mode-card {
+  display: grid;
+  gap: 8px;
+  min-height: 168px;
+}
+
+.mode-card h2,
+.mode-card p,
+.suggestion-box h2 {
+  margin: 0;
+}
+
+.mode-card span {
+  width: max-content;
+  border: 1px solid rgba(245, 197, 66, 0.3);
+  border-radius: 999px;
+  padding: 5px 9px;
+  color: var(--gold);
+  font-weight: 900;
+}
+
+.mode-card:hover,
+.suggestion-box {
+  border-color: rgba(33, 196, 93, 0.5);
+}
+
+.guess-history {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.guess-history span {
+  border: 1px solid rgba(242, 85, 85, 0.34);
+  border-radius: 999px;
+  padding: 6px 10px;
+  color: #ffdede;
+  background: rgba(242, 85, 85, 0.1);
+}
+
+.suggestion-box {
+  display: grid;
+  gap: 12px;
+  margin: 14px 0;
+}
+
+.full-width-button {
+  width: 100%;
+  margin-top: 14px;
+}
+
+.mode-jump {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.mode-jump a {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 8px 12px;
+  color: var(--muted);
+}
+
+.quick-summary {
+  display: grid;
+  gap: 4px;
+  border: 1px solid rgba(245, 197, 66, 0.34);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.quick-summary strong {
+  color: var(--gold);
+  font-size: 2.6rem;
+}
+
+.achievement {
+  opacity: 0.58;
+}
+
+.achievement--unlocked {
+  border-color: rgba(245, 197, 66, 0.52);
+  opacity: 1;
+}
+
+.practice-config label {
+  display: grid;
+  gap: 7px;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.practice-config select {
+  min-height: 48px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: #102018;
+  color: var(--white);
+}
+
 .content-grid article,
 .rules-list article,
 .stat-card,
@@ -539,6 +677,93 @@ main {
   overflow: hidden;
   border-radius: 999px;
   background: rgba(245, 255, 247, 0.1);
+}
+
+.progress-card,
+.settings-panel,
+.cosmetic-group {
+  display: grid;
+  gap: 14px;
+  margin: 18px 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 18px;
+  background: rgba(16, 32, 24, 0.78);
+}
+
+.xp-track {
+  height: 12px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(245, 255, 247, 0.1);
+}
+
+.xp-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--gold), var(--grass));
+}
+
+.arcade-hud {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.arcade-hud span {
+  border: 1px solid rgba(245, 197, 66, 0.28);
+  border-radius: 8px;
+  padding: 10px;
+  background: rgba(245, 197, 66, 0.09);
+  color: var(--gold);
+  font-weight: 900;
+  text-align: center;
+}
+
+.settings-panel label {
+  display: grid;
+  gap: 7px;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.settings-panel select {
+  min-height: 48px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: #102018;
+  color: var(--white);
+}
+
+.toggle-row {
+  grid-template-columns: 1fr auto;
+  align-items: center;
+}
+
+.toggle-row input {
+  width: 22px;
+  height: 22px;
+}
+
+.play-now-button {
+  min-height: 58px;
+  padding-inline: 26px;
+  font-size: 1.08rem;
+}
+
+.tutorial-card ol {
+  margin: 0;
+  padding-left: 22px;
+  color: var(--muted);
+  line-height: 1.9;
+}
+
+.cosmetic-card:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
 }
 
 .progress-track span {
@@ -1014,6 +1239,21 @@ main {
 
   .content-grid {
     grid-template-columns: repeat(4, 1fr);
+  }
+
+  .home-stats,
+  .mode-grid,
+  .mode-stats-grid,
+  .practice-config {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .mode-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .achievements-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .game-card {

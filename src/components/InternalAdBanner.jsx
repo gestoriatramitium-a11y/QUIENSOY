@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { PLATFORM_CONFIG } from "../config/platform.js";
 import { internalAds } from "../config/internalAds.js";
 
 const placementOffsets = {
@@ -21,6 +22,8 @@ export default function InternalAdBanner({ placement = "top", compact = false })
     const interval = window.setInterval(() => setTick((value) => value + 1), 9000);
     return () => window.clearInterval(interval);
   }, []);
+
+  if (PLATFORM_CONFIG.platform === "crazygames" || !PLATFORM_CONFIG.enableInternalAds) return null;
 
   return (
     <a

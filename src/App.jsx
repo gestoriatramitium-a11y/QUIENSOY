@@ -10,33 +10,32 @@ import Ranking from "./pages/Ranking.jsx";
 import Privacy from "./pages/Privacy.jsx";
 import Contact from "./pages/Contact.jsx";
 import Practice from "./pages/Practice.jsx";
+import Settings from "./pages/Settings.jsx";
+import Customize from "./pages/Customize.jsx";
 import { SITE_URL } from "./config/game.js";
 
 const pageMeta = {
   "/": {
     title: "¿Quién Soy? Fútbol | Juego diario para adivinar futbolistas",
     description:
-      "Juega gratis a ¿Quién Soy? Fútbol. Adivina el futbolista oculto del día con pistas, comparte tu resultado y reta a tus amigos."
+      "Juega gratis a ¿Quién Soy? Fútbol. Adivina jugadores, clubes europeos, estrellas de LaLiga y leyendas de los Mundiales con pistas diarias."
   },
   "/jugar": {
-    title: "Jugar al reto diario de fútbol | ¿Quién Soy? Fútbol",
+    title: "Jugar a ¿Quién Soy? Fútbol | Reto diario y modos de fútbol",
     description:
-      "Adivina el futbolista de hoy con pistas progresivas. Juego rápido, gratuito y pensado para fans del fútbol."
+      "Elige modo de juego y adivina futbolistas o clubes europeos con pistas progresivas, rachas, puntos y resultados para compartir."
   },
   "/estadisticas": {
     title: "Tus estadísticas | ¿Quién Soy? Fútbol",
-    description:
-      "Consulta tus victorias, rachas y resultados en el juego diario de adivinar futbolistas."
+    description: "Consulta tus puntos, rachas, medallas, victorias y resultados por modo de juego."
   },
   "/como-jugar": {
-    title: "Cómo jugar a ¿Quién Soy? Fútbol",
-    description:
-      "Aprende las reglas del juego diario de fútbol: pistas, intentos, rachas y resultados compartibles."
+    title: "Cómo jugar | ¿Quién Soy? Fútbol",
+    description: "Aprende las reglas del juego: pistas, intentos, modos, rachas, puntos y resultados compartibles."
   },
   "/ranking": {
     title: "Ranking | ¿Quién Soy? Fútbol",
-    description:
-      "Consulta tu puntuación local y prepárate para el futuro ranking global del reto diario de fútbol."
+    description: "Consulta tu ranking local, mejores modos, mejor racha y puntuación en ¿Quién Soy? Fútbol."
   },
   "/privacidad": {
     title: "Política de privacidad | ¿Quién Soy? Fútbol",
@@ -48,8 +47,16 @@ const pageMeta = {
     description: "Contacta con el equipo de ¿Quién Soy? Fútbol para consultas, ideas o colaboraciones."
   },
   "/practica": {
-    title: "Modo práctica | ¿Quién Soy? Fútbol",
-    description: "Próximamente podrás jugar retos anteriores en el modo práctica de ¿Quién Soy? Fútbol."
+    title: "Entrenamiento | ¿Quién Soy? Fútbol",
+    description: "Configura partidas libres por tipo, categoría, dificultad y edad en ¿Quién Soy? Fútbol."
+  },
+  "/ajustes": {
+    title: "Ajustes | ¿Quién Soy? Fútbol",
+    description: "Cambia idioma, sonido, vibración y preferencias locales del juego."
+  },
+  "/personalizar": {
+    title: "Personalizar | ¿Quién Soy? Fútbol",
+    description: "Elige cosméticos desbloqueados, temas visuales y estilos de tarjeta."
   }
 };
 
@@ -106,6 +113,8 @@ function renderRoute(pathname) {
   if (pathname === "/privacidad") return <Privacy />;
   if (pathname === "/contacto") return <Contact />;
   if (pathname === "/practica") return <Practice />;
+  if (pathname === "/ajustes") return <Settings />;
+  if (pathname === "/personalizar") return <Customize />;
   return <Home />;
 }
 

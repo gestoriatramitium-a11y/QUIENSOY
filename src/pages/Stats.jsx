@@ -12,12 +12,12 @@ export default function Stats() {
   }
 
   return (
-    <div className="page narrow-page">
+    <div className="page">
       <AdBanner placement="top" />
       <section className="page-heading">
         <p className="eyebrow">Tu rendimiento</p>
         <h1>Estadísticas</h1>
-        <p>Consulta tus victorias, derrotas, rachas, distribución de intentos y puntuación total.</p>
+        <p>Consulta puntos, rachas, medallas, victorias y resultados por modo. Los datos se guardan solo en este dispositivo.</p>
       </section>
       <StatsPanel stats={stats} />
       <button className="danger-button" type="button" onClick={handleReset}>

@@ -7,7 +7,7 @@ export const ADS_CONFIG = {
   adsenseSlotTop: "",
   adsenseSlotBottom: "",
   h5GamesEnabled: false,
-  interstitialFrequency: 1,
+  interstitialFrequency: 2,
   rewardedEnabled: true
 };
 

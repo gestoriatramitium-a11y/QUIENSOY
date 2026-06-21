@@ -93,6 +93,40 @@ Los banners internos se editan en `src/config/internalAds.js`. Ahí están los e
 
 Cuando haya una red aprobada, crea un adaptador real dentro de los componentes de anuncios y deja `InternalAdBanner` como fallback. Los interstitials deben mostrarse solo en momentos naturales: al terminar una partida, después de compartir o antes de repetir, nunca mientras el usuario escribe.
 
+## Plataforma web o CrazyGames
+
+La configuración está en `src/config/platform.js`.
+
+- `platform: "web"` mantiene banners internos, SEO, páginas informativas y compartir.
+- `platform: "crazygames"` oculta banners externos propios y deja preparada la lógica para SDK/fallback seguro.
+
+Los servicios preparados están en:
+
+- `src/services/crazyGamesSdk.js`
+- `src/services/adService.js`
+
+No se carga SDK real todavía; las funciones no rompen si `window.CrazyGames` no existe.
+
+## Idiomas
+
+El juego incluye español e inglés sin librerías externas:
+
+- `src/i18n/translations.js`
+- `src/i18n/useI18n.js`
+- `src/config/languages.js`
+
+Detecta idioma del navegador y guarda la elección en localStorage. En modo CrazyGames puede arrancar en inglés por defecto.
+
+## Modos extra y progresión
+
+Además de los modos ya existentes, se añadieron:
+
+- Supervivencia: 3 vidas, rondas infinitas y récord local.
+- Contrarreloj: 60 segundos, saltos con penalización y rango final.
+- XP, niveles, títulos y cosméticos desbloqueables.
+- Ajustes en `/ajustes`.
+- Personalización en `/personalizar`.
+
 ## Estadísticas y reto diario
 
 Las estadísticas se guardan en `localStorage`:

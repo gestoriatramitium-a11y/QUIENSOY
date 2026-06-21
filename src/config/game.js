@@ -1,6 +1,16 @@
 export const SITE_URL = "https://quien-soy-futbol.netlify.app";
 
-// En producción debe estar en false para que cada reto diario solo pueda completarse una vez.
-export const DEV_ALLOW_REPLAY = false;
+export const GAME_CONFIG = {
+  DEV_ALLOW_REPLAY: false,
+  MAX_ATTEMPTS: 6,
+  QUICK_MODE_ROUNDS: 5,
+  QUICK_MODE_MAX_HINTS: 3,
+  QUICK_MODE_MAX_ATTEMPTS: 3,
+  DAILY_ENABLED: true,
+  PRACTICE_ENABLED: true,
+  WEEKLY_SPECIAL_ENABLED: true,
+  AGE_GROUPS_ENABLED: true
+};
 
-export const MAX_ATTEMPTS = 6;
+export const DEV_ALLOW_REPLAY = GAME_CONFIG.DEV_ALLOW_REPLAY;
+export const MAX_ATTEMPTS = GAME_CONFIG.MAX_ATTEMPTS;
