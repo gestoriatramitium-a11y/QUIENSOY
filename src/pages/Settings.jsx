@@ -6,8 +6,24 @@ import { useI18n } from "../i18n/useI18n.js";
 import { getSettings, saveSettings } from "../utils/settings.js";
 import { getStats, resetStats } from "../utils/storage.js";
 
+const COPY = {
+  es: {
+    description: "Idioma, sonido, vibracion y datos locales.",
+    spanish: "Espa\u00f1ol",
+    english: "English"
+  },
+  en: {
+    description: "Language, sound, vibration and local data controls.",
+    spanish: "Espa\u00f1ol",
+    english: "English"
+  }
+};
+
 export default function Settings() {
-  const { language, setLanguage, t } = useI18n();
+  const { language, saveLanguage, t } = useI18n();
+  const copy = COPY[language] || COPY.en;
+  const [draftLanguage, setDraftLanguage] = useState(language);
+  const [savedMessage, setSavedMessage] = useState("");
   const [settings, setSettings] = useState(getSettings);
   const stats = getStats();
 
@@ -15,6 +31,11 @@ export default function Settings() {
     const merged = { ...settings, ...next };
     setSettings(merged);
     saveSettings(merged);
+  }
+
+  function handleSaveLanguage() {
+    saveLanguage(draftLanguage);
+    setSavedMessage(draftLanguage === "es" ? "Idioma guardado correctamente" : "Language saved successfully");
   }
 
   function handleReset() {
@@ -28,19 +49,27 @@ export default function Settings() {
       <section className="page-heading">
         <p className="eyebrow">{t("settings")}</p>
         <h1>{t("settings")}</h1>
-        <p>Language, sound, vibration, platform and local data controls.</p>
+        <p>{copy.description}</p>
       </section>
       <section className="settings-panel">
         <label>
           {t("language")}
-          <select value={language} onChange={(event) => setLanguage(event.target.value)}>
+          <select value={draftLanguage} onChange={(event) => setDraftLanguage(event.target.value)}>
             {SUPPORTED_LANGUAGES.map((item) => (
               <option value={item.code} key={item.code}>
-                {item.label}
+                {item.code === "es" ? copy.spanish : copy.english}
               </option>
             ))}
           </select>
         </label>
+        <button className="primary-button" type="button" onClick={handleSaveLanguage}>
+          {draftLanguage === "es" ? "Guardar" : "Save"}
+        </button>
+        {savedMessage && <p className="status-text">{savedMessage}</p>}
+        <div className="local-score">
+          <span>{t("currentSavedLanguage")}</span>
+          <strong>{language === "es" ? copy.spanish : copy.english}</strong>
+        </div>
         <label className="toggle-row">
           {t("sound")}
           <input type="checkbox" checked={settings.soundEnabled} onChange={(event) => updateSettings({ soundEnabled: event.target.checked })} />
@@ -62,7 +91,7 @@ export default function Settings() {
           <strong>1.0.0</strong>
         </div>
         <div className="local-score">
-          <span>Local games</span>
+          <span>{t("localGames")}</span>
           <strong>{stats.gamesPlayed}</strong>
         </div>
         <button className="danger-button" type="button" onClick={handleReset}>

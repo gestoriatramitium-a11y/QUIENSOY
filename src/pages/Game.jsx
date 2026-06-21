@@ -10,6 +10,7 @@ import InterstitialAd from "../components/InterstitialAd.jsx";
 import RewardedAdModal from "../components/RewardedAdModal.jsx";
 import { getAgeGroup } from "../config/ageGroups.js";
 import { DEV_ALLOW_REPLAY, GAME_CONFIG, MAX_ATTEMPTS } from "../config/game.js";
+import { useI18n } from "../i18n/useI18n.js";
 import { getTimeToNextChallenge, getTodayKey } from "../utils/datePlayer.js";
 import { findBestMatch } from "../utils/fuzzyMatch.js";
 import { getScore } from "../utils/scoring.js";
@@ -51,7 +52,86 @@ function getPracticeOptions() {
   };
 }
 
-function getInitialSingleState({ modeId, dateKey, ageGroupId }) {
+const GAME_COPY = {
+  es: {
+    completedDaily: "Ya completaste el reto de hoy en esta categoría.",
+    firstHint: "Primera pista desbloqueada.",
+    correct: "¡Correcto!",
+    accepted: "Lo damos por bueno ✅",
+    notEasy: "No era fácil. La respuesta era:",
+    wrongHint: "No parece ser ese jugador. Se desbloquea otra pista.",
+    quickStart: "Ronda rápida. Tienes pocas pistas: piensa y responde.",
+    quickFinished: "Modo rápido terminado. Nivel:",
+    quickWrong: "Fallaste. Nueva pista y seguimos rápido.",
+    was: "Era",
+    timeFinished: "Tiempo terminado. Rango:",
+    survivalStart: "Empiezas con 3 vidas. ¿Cuántas rondas aguantas?",
+    timeStart: "60 segundos. Acierta rápido o salta.",
+    wrongTime: "No es. Pierdes 2 segundos.",
+    wrongSurvival: "No es. Se desbloquea otra pista.",
+    gameFinished: "Partida terminada.",
+    skipped: "Saltaste:",
+    extraHelp: "Ayuda extra:",
+    attempts: "intentos",
+    lives: "Vidas",
+    time: "Tiempo",
+    points: "Puntos",
+    correctCount: "Aciertos",
+    hiddenClub: "Club oculto",
+    hiddenPlayer: "Jugador oculto",
+    timeAttackTitle: "Contrarreloj",
+    round: "Ronda",
+    extraClue: "Ver anuncio para conseguir ayuda extra",
+    skip: "Saltar",
+    nextPlayer: "Siguiente jugador",
+    playAgain: "Jugar otra vez",
+    playQuickAgain: "Jugar otro modo rápido",
+    tomorrow: "Volver mañana · Nuevo reto en",
+    otherModes: "Ir a otros modos",
+    practice: "Entrenamiento",
+    weekly: "Especial de la semana"
+  },
+  en: {
+    completedDaily: "You already completed today's challenge in this category.",
+    firstHint: "First clue unlocked.",
+    correct: "Correct!",
+    accepted: "We count it as correct ✅",
+    notEasy: "Not easy. The answer was:",
+    wrongHint: "That does not look right. A new clue is unlocked.",
+    quickStart: "Quick round. Few clues, think fast.",
+    quickFinished: "Quick Match finished. Level:",
+    quickWrong: "Wrong. New clue, keep going.",
+    was: "It was",
+    timeFinished: "Time over. Rank:",
+    survivalStart: "You start with 3 lives. How many rounds can you survive?",
+    timeStart: "60 seconds. Guess fast or skip.",
+    wrongTime: "Wrong. You lose 2 seconds.",
+    wrongSurvival: "Wrong. A new clue is unlocked.",
+    gameFinished: "Game over.",
+    skipped: "Skipped:",
+    extraHelp: "Extra clue:",
+    attempts: "attempts",
+    lives: "Lives",
+    time: "Time",
+    points: "Points",
+    correctCount: "Correct",
+    hiddenClub: "Hidden club",
+    hiddenPlayer: "Hidden player",
+    timeAttackTitle: "Time Attack",
+    round: "Round",
+    extraClue: "Watch ad for extra clue",
+    skip: "Skip",
+    nextPlayer: "Next player",
+    playAgain: "Play again",
+    playQuickAgain: "Play Quick Match again",
+    tomorrow: "Come back tomorrow · New challenge in",
+    otherModes: "Other modes",
+    practice: "Practice",
+    weekly: "Weekly special"
+  }
+};
+
+function getInitialSingleState({ modeId, dateKey, ageGroupId, copy }) {
   const mode = getMode(modeId);
   const item = mode.daily ? getDailyItem(new Date(), ageGroupId) : getRandomItemForMode(mode.id, getPracticeOptions());
   const savedResult = mode.daily && !DEV_ALLOW_REPLAY ? getDailyResult(dateKey, ageGroupId) : null;
@@ -61,7 +141,7 @@ function getInitialSingleState({ modeId, dateKey, ageGroupId }) {
     result: savedResult,
     attempts: savedResult?.attempts || 0,
     visibleHints: savedResult ? MAX_ATTEMPTS : 1,
-    message: savedResult ? "Ya completaste el reto de hoy en esta categoría." : "Primera pista desbloqueada.",
+    message: savedResult ? copy.completedDaily : copy.firstHint,
     revealedExtra: [],
     guesses: [],
     suggestion: null
@@ -69,13 +149,15 @@ function getInitialSingleState({ modeId, dateKey, ageGroupId }) {
 }
 
 export default function Game() {
+  const { language } = useI18n();
+  const copy = GAME_COPY[language] || GAME_COPY.en;
   const dateKey = useMemo(() => getTodayKey(), []);
   const [modeId] = useState(() => getQueryMode());
   const mode = getMode(modeId);
   const [ageGroupId, setAgeGroupId] = useState(() => getPreferredAgeGroup());
-  const [single, setSingle] = useState(() => getInitialSingleState({ modeId: mode.id, dateKey, ageGroupId: getPreferredAgeGroup() }));
-  const [quick, setQuick] = useState(() => buildQuickState(mode.id));
-  const [arcade, setArcade] = useState(() => buildArcadeState(mode.id));
+  const [single, setSingle] = useState(() => getInitialSingleState({ modeId: mode.id, dateKey, ageGroupId: getPreferredAgeGroup(), copy }));
+  const [quick, setQuick] = useState(() => buildQuickState(mode.id, copy));
+  const [arcade, setArcade] = useState(() => buildArcadeState(mode.id, copy));
   const [interstitialOpen, setInterstitialOpen] = useState(false);
   const [rewardedOpen, setRewardedOpen] = useState(false);
 
@@ -98,8 +180,8 @@ export default function Game() {
 
   useEffect(() => {
     savePreferredAgeGroup(ageGroupId);
-    if (mode.daily) setSingle(getInitialSingleState({ modeId: mode.id, dateKey, ageGroupId }));
-  }, [ageGroupId, dateKey, mode.daily, mode.id]);
+    if (mode.daily) setSingle(getInitialSingleState({ modeId: mode.id, dateKey, ageGroupId, copy }));
+  }, [ageGroupId, dateKey, mode.daily, mode.id, language]);
 
   useEffect(() => {
     if (!mode.timeAttack || arcade.completed) return undefined;
@@ -118,7 +200,7 @@ export default function Game() {
           });
           setInterstitialOpen(true);
           playSound("finish");
-          return { ...current, timeLeft: 0, completed: true, result, message: `Tiempo terminado. Rango: ${result.rank}.` };
+          return { ...current, timeLeft: 0, completed: true, result, message: `${copy.timeFinished} ${result.rank}.` };
         }
         return { ...current, timeLeft };
       });
@@ -133,9 +215,9 @@ export default function Game() {
     if (match.type === "exact" || match.type === "accepted_fuzzy") {
       playSound("success");
       vibrate(45);
-      if (isArcade) finishArcadeRound(true, match.type === "accepted_fuzzy" ? "Lo damos por bueno ✅" : "¡Correcto!");
-      else if (isQuick) finishQuickRound(true, match.type === "accepted_fuzzy" ? "Lo damos por bueno ✅" : "¡Correcto!");
-      else finishSingle(single.attempts + 1, true, match.type === "accepted_fuzzy" ? "Lo damos por bueno ✅" : "");
+      if (isArcade) finishArcadeRound(true, match.type === "accepted_fuzzy" ? copy.accepted : copy.correct);
+      else if (isQuick) finishQuickRound(true, match.type === "accepted_fuzzy" ? copy.accepted : copy.correct);
+      else finishSingle(single.attempts + 1, true, match.type === "accepted_fuzzy" ? copy.accepted : "");
       return;
     }
 
@@ -160,7 +242,7 @@ export default function Game() {
       result,
       visibleHints: MAX_ATTEMPTS,
       suggestion: null,
-      message: customMessage || (won ? `¡Correcto! Lo has adivinado en ${nextAttempts} intentos.` : `No era fácil. La respuesta era: ${current.item.nombre}.`)
+      message: customMessage || (won ? `${copy.correct} ${nextAttempts}/${MAX_ATTEMPTS}.` : `${copy.notEasy} ${current.item.nombre}.`)
     }));
     setInterstitialOpen(true);
   }
@@ -177,7 +259,7 @@ export default function Game() {
       attempts: nextAttempts,
       visibleHints: Math.min(MAX_ATTEMPTS, nextAttempts + 1),
       guesses: [...current.guesses, value],
-      message: "No parece ser ese jugador. Se desbloquea otra pista."
+      message: copy.wrongHint
     }));
   }
 
@@ -196,7 +278,7 @@ export default function Game() {
         points: nextPoints,
         finishedRounds: nextRounds,
         result,
-        message: `Modo rápido terminado. Nivel: ${getQuickLevel(nextCorrect)}.`
+        message: `${copy.quickFinished} ${getQuickLevel(nextCorrect)}.`
       }));
       setInterstitialOpen(true);
       playSound("finish");
@@ -221,7 +303,7 @@ export default function Game() {
   function handleQuickWrong(value) {
     const nextAttempts = quick.attempts + 1;
     if (nextAttempts >= GAME_CONFIG.QUICK_MODE_MAX_ATTEMPTS) {
-      finishQuickRound(false, `Era ${currentItem.nombre}.`);
+      finishQuickRound(false, `${copy.was} ${currentItem.nombre}.`);
       return;
     }
     setQuick((current) => ({
@@ -229,7 +311,7 @@ export default function Game() {
       attempts: nextAttempts,
       visibleHints: Math.min(GAME_CONFIG.QUICK_MODE_MAX_HINTS, nextAttempts + 1),
       guesses: [...current.guesses, value],
-      message: "Fallaste. Nueva pista y seguimos rápido."
+      message: copy.quickWrong
     }));
   }
 
@@ -267,7 +349,7 @@ export default function Game() {
   function handleArcadeWrong(value) {
     const nextAttempts = arcade.attempts + 1;
     if (nextAttempts >= maxAttempts) {
-      finishArcadeRound(false, `Era ${currentItem.nombre}.`);
+      finishArcadeRound(false, `${copy.was} ${currentItem.nombre}.`);
       return;
     }
     setArcade((current) => ({
@@ -276,7 +358,7 @@ export default function Game() {
       visibleHints: Math.min(maxHints, nextAttempts + 1),
       guesses: [...current.guesses, value],
       timeLeft: mode.timeAttack ? Math.max(0, current.timeLeft - 2) : current.timeLeft,
-      message: mode.timeAttack ? "No es. Pierdes 2 segundos." : "No es. Se desbloquea otra pista."
+      message: mode.timeAttack ? copy.wrongTime : copy.wrongSurvival
     }));
   }
 
@@ -290,15 +372,15 @@ export default function Game() {
       correct: finalState.correct,
       rank
     });
-    setArcade((current) => ({ ...current, ...finalState, completed: true, result, message: `Partida terminada. ${rank}.` }));
+    setArcade((current) => ({ ...current, ...finalState, completed: true, result, message: `${copy.gameFinished} ${rank}.` }));
     setInterstitialOpen(true);
     playSound("finish");
   }
 
   function acceptSuggestion() {
-    if (isArcade) finishArcadeRound(true, "Lo damos por bueno ✅");
-    else if (isQuick) finishQuickRound(true, "Lo damos por bueno ✅");
-    else finishSingle(single.attempts + 1, true, "Lo damos por bueno ✅");
+    if (isArcade) finishArcadeRound(true, copy.accepted);
+    else if (isQuick) finishQuickRound(true, copy.accepted);
+    else finishSingle(single.attempts + 1, true, copy.accepted);
   }
 
   function rejectSuggestion() {
@@ -309,17 +391,17 @@ export default function Game() {
 
   function skipRound() {
     if (isQuick) {
-      finishQuickRound(false, `Saltaste: ${currentItem.nombre}.`);
+      finishQuickRound(false, `${copy.skipped} ${currentItem.nombre}.`);
       return;
     }
     if (isArcade) {
       if (mode.timeAttack) setArcade((current) => ({ ...current, timeLeft: Math.max(0, current.timeLeft - 5) }));
-      finishArcadeRound(false, `Saltaste: ${currentItem.nombre}.`);
+      finishArcadeRound(false, `${copy.skipped} ${currentItem.nombre}.`);
     }
   }
 
   function nextSingleGame() {
-    setSingle(getInitialSingleState({ modeId: mode.id, dateKey, ageGroupId }));
+    setSingle(getInitialSingleState({ modeId: mode.id, dateKey, ageGroupId, copy }));
   }
 
   function unlockReward() {
@@ -333,12 +415,12 @@ export default function Game() {
         ...current,
         timeLeft: mode.timeAttack ? Math.max(0, current.timeLeft - 3) : current.timeLeft,
         revealedExtra: [...current.revealedExtra, helper],
-        message: `Ayuda extra: ${helper.label}.`
+        message: `${copy.extraHelp} ${helper.label}.`
       }));
     } else if (isQuick) {
-      setQuick((current) => ({ ...current, revealedExtra: [...current.revealedExtra, helper], message: `Ayuda extra: ${helper.label}.` }));
+      setQuick((current) => ({ ...current, revealedExtra: [...current.revealedExtra, helper], message: `${copy.extraHelp} ${helper.label}.` }));
     } else {
-      setSingle((current) => ({ ...current, revealedExtra: [...current.revealedExtra, helper], message: `Ayuda extra: ${helper.label}.` }));
+      setSingle((current) => ({ ...current, revealedExtra: [...current.revealedExtra, helper], message: `${copy.extraHelp} ${helper.label}.` }));
     }
     setRewardedOpen(false);
   }
@@ -351,22 +433,22 @@ export default function Game() {
           <div className="game-topline">
             <div>
               <p className="eyebrow">
-                {weeklyTheme ? `Especial de la semana: ${weeklyTheme.title}` : mode.label}
+                {weeklyTheme ? `${copy.weekly}: ${weeklyTheme.title}` : getModeLabel(mode.id, language, mode.label)}
                 {mode.daily ? ` · ${ageGroup.shortTitle}` : ""}
               </p>
-              <h1>{getGameHeading({ isQuick, isArcade, quick, arcade, mode, currentItem })}</h1>
+              <h1>{getGameHeading({ isQuick, isArcade, quick, arcade, mode, currentItem, copy })}</h1>
             </div>
             <div className="attempt-counter">
-              {attempts}/{maxAttempts} intentos
+              {attempts}/{maxAttempts} {copy.attempts}
             </div>
           </div>
 
           {isArcade && (
             <div className="arcade-hud">
-              {mode.survival && <span>Vidas: {"♥".repeat(Math.max(0, arcade.lives))}</span>}
-              {mode.timeAttack && <span>Tiempo: {arcade.timeLeft}s</span>}
-              <span>Puntos: {arcade.points}</span>
-              <span>Aciertos: {arcade.correct}</span>
+              {mode.survival && <span>{copy.lives}: {"♥".repeat(Math.max(0, arcade.lives))}</span>}
+              {mode.timeAttack && <span>{copy.time}: {arcade.timeLeft}s</span>}
+              <span>{copy.points}: {arcade.points}</span>
+              <span>{copy.correctCount}: {arcade.correct}</span>
             </div>
           )}
 
@@ -396,11 +478,11 @@ export default function Game() {
               <HintList hints={currentItem.pistas.slice(0, maxHints)} visibleCount={visibleHints} />
               <GuessInput disabled={completed || Boolean(suggestion)} onGuess={handleGuess} />
               <button className="reward-button" type="button" onClick={() => setRewardedOpen(true)}>
-                Ver anuncio para conseguir ayuda extra
+                {copy.extraClue}
               </button>
               {(isQuick || isArcade) && (
                 <button className="ghost-button full-width-button" type="button" onClick={skipRound}>
-                  Saltar
+                  {copy.skip}
                 </button>
               )}
             </>
@@ -410,20 +492,20 @@ export default function Game() {
 
           {completed && !mode.daily && !isQuick && !isArcade && (
             <button className="primary-button full-width-button" type="button" onClick={nextSingleGame}>
-              Siguiente jugador
+              {copy.nextPlayer}
             </button>
           )}
 
           {completed && (isQuick || isArcade) && (
             <a className="primary-button full-width-button" href={`/jugar?modo=${mode.id}`}>
-              Jugar otra vez
+              {isQuick ? copy.playQuickAgain : copy.playAgain}
             </a>
           )}
 
-          {completed && mode.daily && <p className="tomorrow-note">Volver mañana · Nuevo reto en {getTimeToNextChallenge()}</p>}
+          {completed && mode.daily && <p className="tomorrow-note">{copy.tomorrow} {getTimeToNextChallenge()}</p>}
           <div className="mode-jump">
-            <a href="/">Ir a otros modos</a>
-            <a href="/practica">Entrenamiento</a>
+            <a href="/">{copy.otherModes}</a>
+            <a href="/practica">{copy.practice}</a>
           </div>
         </div>
       </section>
@@ -434,7 +516,7 @@ export default function Game() {
   );
 }
 
-function buildQuickState(modeId) {
+function buildQuickState(modeId, copy = GAME_COPY.en) {
   if (getMode(modeId).id !== "rapido") {
     return { rounds: [], index: 0, attempts: 0, visibleHints: 1, correct: 0, points: 0, finishedRounds: [], guesses: [], revealedExtra: [] };
   }
@@ -449,13 +531,13 @@ function buildQuickState(modeId) {
     guesses: [],
     revealedExtra: [],
     suggestion: null,
-    message: "Ronda rápida. Tienes pocas pistas: piensa y responde.",
+    message: copy.quickStart,
     completed: false,
     result: null
   };
 }
 
-function buildArcadeState(modeId) {
+function buildArcadeState(modeId, copy = GAME_COPY.en) {
   const mode = getMode(modeId);
   if (!mode.survival && !mode.timeAttack) {
     return {
@@ -489,15 +571,43 @@ function buildArcadeState(modeId) {
     suggestion: null,
     completed: false,
     result: null,
-    message: mode.timeAttack ? "60 segundos. Acierta rápido o salta." : "Empiezas con 3 vidas. ¿Cuántas rondas aguantas?"
+    message: mode.timeAttack ? copy.timeStart : copy.survivalStart
   };
 }
 
-function getGameHeading({ isQuick, isArcade, quick, arcade, mode, currentItem }) {
-  if (isQuick) return `Ronda ${quick.index + 1}/5`;
-  if (isArcade && mode.survival) return `Ronda ${arcade.roundsCleared + 1}`;
-  if (isArcade && mode.timeAttack) return "Contrarreloj";
-  return currentItem?.tipo === "club" ? "Club oculto" : "Jugador oculto";
+function getGameHeading({ isQuick, isArcade, quick, arcade, mode, currentItem, copy }) {
+  if (isQuick) return `${copy.round} ${quick.index + 1}/5`;
+  if (isArcade && mode.survival) return `${copy.round} ${arcade.roundsCleared + 1}`;
+  if (isArcade && mode.timeAttack) return copy.timeAttackTitle;
+  return currentItem?.tipo === "club" ? copy.hiddenClub : copy.hiddenPlayer;
+}
+
+function getModeLabel(modeId, language, fallback) {
+  const labels = {
+    es: {
+      diario: "Reto diario",
+      rapido: "Modo Rápido",
+      supervivencia: "Supervivencia",
+      contrarreloj: "Contrarreloj",
+      "liga-espanola": "Liga Española",
+      mundiales: "Mundiales",
+      "clubes-europeos": "Clubes Europeos",
+      entrenamiento: "Entrenamiento",
+      "especial-semana": "Especial de la semana"
+    },
+    en: {
+      diario: "Daily Challenge",
+      rapido: "Quick Match",
+      supervivencia: "Survival",
+      contrarreloj: "Time Attack",
+      "liga-espanola": "Spanish League",
+      mundiales: "World Cup Legends",
+      "clubes-europeos": "European Clubs",
+      entrenamiento: "Practice",
+      "especial-semana": "Weekly Special"
+    }
+  };
+  return labels[language]?.[modeId] || fallback;
 }
 
 function getRewardHelper(item, revealedExtra = []) {
