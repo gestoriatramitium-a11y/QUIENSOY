@@ -1,0 +1,33 @@
+Para crear el ZIP correcto para CrazyGames:
+
+1. Ejecuta la build:
+   npm run build
+
+2. Comprueba que existen:
+   dist/index.html
+   dist/assets/
+
+3. Crea el ZIP con el CONTENIDO de dist, no con la carpeta dist.
+
+En Windows PowerShell, desde la carpeta del proyecto:
+   Compress-Archive -Path dist\* -DestinationPath who-am-i-football-crazygames.zip -Force
+
+En Linux/Mac, desde la carpeta del proyecto:
+   cd dist
+   zip -r ../who-am-i-football-crazygames.zip .
+   cd ..
+
+El ZIP correcto debe contener en la raiz:
+   index.html
+   assets/
+   robots.txt
+   sitemap.xml
+   _redirects
+
+No debe contener:
+   dist/index.html
+   dist/assets/
+   node_modules/
+   src/
+   package.json
+   vite.config.js
