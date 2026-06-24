@@ -1,4 +1,5 @@
 import { AGE_GROUPS } from "../config/ageGroups.js";
+import { translateAgeGroupLabel } from "../i18n/gameText.js";
 import { useI18n } from "../i18n/useI18n.js";
 
 const AGE_COPY = {
@@ -56,7 +57,7 @@ export default function AgeGroupSelector({ selectedAgeGroupId, onChange, compact
             key={group.id}
             onClick={() => onChange(group.id)}
           >
-            <strong>{group.shortTitle}</strong>
+            <strong>{translateAgeGroupLabel(group, language)}</strong>
             <span>{copy.difficulty[group.id] || group.difficultyLabel}</span>
             {!compact && <small>{copy.description[group.id] || group.description}</small>}
           </button>

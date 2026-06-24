@@ -2,10 +2,10 @@ export const AGE_GROUPS = [
   {
     id: "kids",
     label: "10-17",
-    title: "Niños y adolescentes",
-    shortTitle: "10-17 años",
-    difficultyLabel: "Más fácil",
-    description: "Jugadores muy actuales, virales y fáciles de reconocer para quienes siguen fútbol en redes.",
+    title: "kids-teens",
+    shortTitle: "10-17",
+    difficultyLabel: "easy",
+    description: "current-young-players",
     playerIds: [
       "jugador-006",
       "jugador-001",
@@ -28,10 +28,10 @@ export const AGE_GROUPS = [
   {
     id: "young",
     label: "18-25",
-    title: "Jóvenes adultos",
-    shortTitle: "18-25 años",
-    difficultyLabel: "Actual",
-    description: "Mezcla de estrellas actuales y cracks de la última década.",
+    title: "young-adults",
+    shortTitle: "18-25",
+    difficultyLabel: "current",
+    description: "current-stars-last-decade",
     playerIds: [
       "jugador-001",
       "jugador-002",
@@ -58,10 +58,10 @@ export const AGE_GROUPS = [
   {
     id: "adults",
     label: "26-35",
-    title: "Adultos",
-    shortTitle: "26-35 años",
-    difficultyLabel: "Mixto",
-    description: "Figuras actuales y nombres que marcaron los años 2000 y 2010.",
+    title: "adults",
+    shortTitle: "26-35",
+    difficultyLabel: "mixed",
+    description: "current-2000s-2010s",
     playerIds: [
       "jugador-002",
       "jugador-013",
@@ -86,10 +86,10 @@ export const AGE_GROUPS = [
   {
     id: "legends",
     label: "+35",
-    title: "Clásicos y leyendas",
-    shortTitle: "Más de 35",
-    difficultyLabel: "Nostalgia",
-    description: "Futbolistas muy conocidos para quienes crecieron viendo fútbol de los 90, 2000 y 2010.",
+    title: "classics-legends",
+    shortTitle: "+35",
+    difficultyLabel: "nostalgia",
+    description: "classic-players",
     playerIds: [
       "jugador-002",
       "jugador-013",

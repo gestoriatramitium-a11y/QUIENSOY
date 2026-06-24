@@ -16,47 +16,44 @@ import { SITE_URL } from "./config/game.js";
 
 const pageMeta = {
   "/": {
-    title: "¿Quién Soy? Fútbol | Juego diario para adivinar futbolistas",
-    description:
-      "Juega gratis a ¿Quién Soy? Fútbol. Adivina jugadores, clubes europeos, estrellas de LaLiga y leyendas de los Mundiales con pistas diarias."
+    title: "Who Am I? Football | Football Guessing Game",
+    description: "Play Who Am I? Football for free. Guess footballers and clubs with progressive clues, quick modes, stats and shareable results."
   },
   "/jugar": {
-    title: "Jugar a ¿Quién Soy? Fútbol | Reto diario y modos de fútbol",
-    description:
-      "Elige modo de juego y adivina futbolistas o clubes europeos con pistas progresivas, rachas, puntos y resultados para compartir."
+    title: "Play Who Am I? Football | Daily and Quick Football Challenges",
+    description: "Choose a game mode and guess footballers or European clubs with clues, streaks, points and shareable results."
   },
   "/estadisticas": {
-    title: "Tus estadísticas | ¿Quién Soy? Fútbol",
-    description: "Consulta tus puntos, rachas, medallas, victorias y resultados por modo de juego."
+    title: "Stats | Who Am I? Football",
+    description: "Check your points, streaks, achievements, wins and results by game mode."
   },
   "/como-jugar": {
-    title: "Cómo jugar | ¿Quién Soy? Fútbol",
-    description: "Aprende las reglas del juego: pistas, intentos, modos, rachas, puntos y resultados compartibles."
+    title: "How to Play | Who Am I? Football",
+    description: "Learn the rules: clues, attempts, modes, streaks, points and shareable results."
   },
   "/ranking": {
-    title: "Ranking | ¿Quién Soy? Fútbol",
-    description: "Consulta tu ranking local, mejores modos, mejor racha y puntuación en ¿Quién Soy? Fútbol."
+    title: "Ranking | Who Am I? Football",
+    description: "Check your local ranking, best modes, best streak and score in Who Am I? Football."
   },
   "/privacidad": {
-    title: "Política de privacidad | ¿Quién Soy? Fútbol",
-    description:
-      "Información sobre privacidad, almacenamiento local y uso de banners internos o futura publicidad en ¿Quién Soy? Fútbol."
+    title: "Privacy Policy | Who Am I? Football",
+    description: "Privacy information about local storage, language, stats, progression and the CrazyGames-focused build."
   },
   "/contacto": {
-    title: "Contacto | ¿Quién Soy? Fútbol",
-    description: "Contacta con el equipo de ¿Quién Soy? Fútbol para consultas, ideas o colaboraciones."
+    title: "Contact | Who Am I? Football",
+    description: "Contact the Who Am I? Football team for ideas, bugs or game mode proposals."
   },
   "/practica": {
-    title: "Entrenamiento | ¿Quién Soy? Fútbol",
-    description: "Configura partidas libres por tipo, categoría, dificultad y edad en ¿Quién Soy? Fútbol."
+    title: "Practice | Who Am I? Football",
+    description: "Set up free games by type, category, difficulty and age group."
   },
   "/ajustes": {
-    title: "Ajustes | ¿Quién Soy? Fútbol",
-    description: "Cambia idioma, sonido, vibración y preferencias locales del juego."
+    title: "Settings | Who Am I? Football",
+    description: "Change language, sound, vibration and local preferences."
   },
   "/personalizar": {
-    title: "Personalizar | ¿Quién Soy? Fútbol",
-    description: "Elige cosméticos desbloqueados, temas visuales y estilos de tarjeta."
+    title: "Customize | Who Am I? Football",
+    description: "Choose unlocked cosmetics, visual themes and card styles."
   }
 };
 
@@ -86,14 +83,15 @@ function setCanonical(href) {
 
 function updateMeta(pathname) {
   const meta = pageMeta[pathname] ?? {
-    title: "Página no encontrada | ¿Quién Soy? Fútbol",
-    description: "La página que buscas no está disponible. Vuelve al reto diario de fútbol."
+    title: "Page Not Found | Who Am I? Football",
+    description: "The page you are looking for is not available. Return to the football guessing game."
   };
   const canonical = `${SITE_URL}${pathname === "/" ? "/" : pathname}`;
 
   document.title = meta.title;
+  document.documentElement.lang = "en";
   setMeta("name", "description", meta.description);
-  setMeta("property", "og:site_name", "¿Quién Soy? Fútbol");
+  setMeta("property", "og:site_name", "Who Am I? Football");
   setMeta("property", "og:type", "website");
   setMeta("property", "og:title", meta.title);
   setMeta("property", "og:description", meta.description);

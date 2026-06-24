@@ -1,6 +1,6 @@
 import { SITE_URL, MAX_ATTEMPTS } from "../config/game.js";
 import { getQuickLevel } from "./gameModes.js";
-import { translateModeLabel, translateQuickLevel } from "../i18n/gameText.js";
+import { translateAgeGroupLabel, translateAgeGroupHeading, translateModeLabel, translateQuickLevel } from "../i18n/gameText.js";
 
 const COPY = {
   es: {
@@ -61,7 +61,10 @@ ${SITE_URL}`;
   }
 
   const mode = translateModeLabel(result?.modeId, language, result?.modeLabel || copy.daily);
-  const category = result?.modeId === "diario" && result?.ageGroupLabel ? `${copy.age}: ${result.ageGroupLabel}\n` : "";
+  const category =
+    result?.modeId === "diario" && result?.ageGroupLabel
+      ? `${translateAgeGroupHeading(language)}: ${translateAgeGroupLabel(result.ageGroupId, language)}\n`
+      : "";
   const status = result?.won ? `${result.attempts}/${MAX_ATTEMPTS} OK` : `${MAX_ATTEMPTS}/${MAX_ATTEMPTS} X`;
   const squares = result?.won ? `${"■".repeat(result.attempts)}${"□".repeat(MAX_ATTEMPTS - result.attempts)}` : "■".repeat(MAX_ATTEMPTS);
   const outro = result?.modeId === "liga-espanola" ? copy.laligaOutro : copy.canBeat;

@@ -5,7 +5,7 @@ import InternalAdBanner from "../components/InternalAdBanner.jsx";
 import Disclaimer from "../components/Disclaimer.jsx";
 import { getAgeGroup } from "../config/ageGroups.js";
 import { PLATFORM_CONFIG } from "../config/platform.js";
-import { translateDifficulty, translateModeLabel, translateShortModeLabel } from "../i18n/gameText.js";
+import { translateAgeGroupLabel, translateDifficulty, translateModeLabel, translateShortModeLabel } from "../i18n/gameText.js";
 import { useI18n } from "../i18n/useI18n.js";
 import { getDailyPlayer, getTimeToNextChallenge } from "../utils/datePlayer.js";
 import { getModeCards, getWeeklyTheme } from "../utils/gameModes.js";
@@ -185,12 +185,11 @@ export default function Home() {
         <div>
           <p className="eyebrow">{copy.dailyPlayer}</p>
           <h2>
-            {t("dailyChallenge")} - {ageGroup.shortTitle}
+            {t("dailyChallenge")} - {translateAgeGroupLabel(ageGroup, language)}
           </h2>
         </div>
         <p>
-          {copy.nextIn} {getTimeToNextChallenge()} - {translateDifficulty(player.dificultad, language)} -{" "}
-          {language === "es" ? ageGroup.difficultyLabel : getEnglishAgeDifficulty(ageGroup.id)}
+          {copy.nextIn} {getTimeToNextChallenge()} - {translateDifficulty(player.dificultad, language)} - {getAgeDifficulty(ageGroup.id, language)}
         </p>
       </section>
 
@@ -236,12 +235,20 @@ function getWeeklyTitle(weekly, copy) {
   return copy.weeklyThemes[weekly.id] || weekly.title;
 }
 
-function getEnglishAgeDifficulty(id) {
+function getAgeDifficulty(id, language) {
   const values = {
-    kids: "Easier",
-    young: "Current",
-    adults: "Mixed",
-    legends: "Nostalgia"
+    es: {
+      kids: "Mas facil",
+      young: "Actual",
+      adults: "Mixto",
+      legends: "Nostalgia"
+    },
+    en: {
+      kids: "Easier",
+      young: "Current",
+      adults: "Mixed",
+      legends: "Nostalgia"
+    }
   };
-  return values[id] || "Mixed";
+  return values[language]?.[id] || values.en[id] || "Mixed";
 }

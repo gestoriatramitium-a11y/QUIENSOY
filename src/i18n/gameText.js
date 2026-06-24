@@ -152,6 +152,36 @@ const quickLevels = {
   }
 };
 
+const ageGroupLabels = {
+  es: {
+    kids: "10-17 años",
+    young: "18-25 años",
+    adults: "26-35 años",
+    legends: "Más de 35"
+  },
+  en: {
+    kids: "10-17 years",
+    young: "18-25 years",
+    adults: "26-35 years",
+    legends: "Over 35"
+  }
+};
+
+const ageGroupTitles = {
+  es: {
+    kids: "Niños y adolescentes",
+    young: "Jovenes adultos",
+    adults: "Adultos",
+    legends: "Clasicos y leyendas"
+  },
+  en: {
+    kids: "Kids and teens",
+    young: "Young adults",
+    adults: "Adults",
+    legends: "Classics and legends"
+  }
+};
+
 export function translateModeLabel(modeId, language = "en", fallback = "") {
   return modeLabels[language]?.[modeId] || fallback;
 }
@@ -184,6 +214,20 @@ export function translateType(value, language = "en") {
 
 export function translateQuickLevel(level, language = "en") {
   return quickLevels[language]?.[level] || level;
+}
+
+export function translateAgeGroupLabel(groupOrId, language = "en") {
+  const id = typeof groupOrId === "string" ? groupOrId : groupOrId?.id;
+  return ageGroupLabels[language]?.[id] || groupOrId?.shortTitle || "";
+}
+
+export function translateAgeGroupTitle(groupOrId, language = "en") {
+  const id = typeof groupOrId === "string" ? groupOrId : groupOrId?.id;
+  return ageGroupTitles[language]?.[id] || groupOrId?.title || "";
+}
+
+export function translateAgeGroupHeading(language = "en") {
+  return language === "es" ? "Tramo de edad" : "Age group";
 }
 
 export function translateExtraLabel(label, language = "en") {

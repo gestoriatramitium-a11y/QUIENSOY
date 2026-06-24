@@ -4,7 +4,7 @@ import { MAX_ATTEMPTS } from "../config/game.js";
 import { getQuickLevel } from "../utils/gameModes.js";
 import { getTimeToNextChallenge } from "../utils/datePlayer.js";
 import { useI18n } from "../i18n/useI18n.js";
-import { translateModeLabel, translateQuickLevel } from "../i18n/gameText.js";
+import { translateAgeGroupLabel, translateAgeGroupHeading, translateModeLabel, translateQuickLevel } from "../i18n/gameText.js";
 
 const COPY = {
   es: {
@@ -54,7 +54,7 @@ export default function ResultCard({ result, onShared }) {
       {result.modeLabel && <p className="result-category">{translateModeLabel(result.modeId, language, result.modeLabel)}</p>}
       {result.ageGroupLabel && result.modeId === "diario" && (
         <p className="result-category">
-          {copy.age}: {result.ageGroupLabel}
+          {translateAgeGroupHeading(language)}: {translateAgeGroupLabel(result.ageGroupId, language)}
         </p>
       )}
       <h2>{getResultTitle(result, language, copy)}</h2>

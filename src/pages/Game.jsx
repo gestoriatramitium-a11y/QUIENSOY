@@ -10,7 +10,7 @@ import InterstitialAd from "../components/InterstitialAd.jsx";
 import RewardedAdModal from "../components/RewardedAdModal.jsx";
 import { getAgeGroup } from "../config/ageGroups.js";
 import { DEV_ALLOW_REPLAY, GAME_CONFIG, MAX_ATTEMPTS } from "../config/game.js";
-import { getLocalizedClues, translateExtraLabel, translateQuickLevel } from "../i18n/gameText.js";
+import { getLocalizedClues, translateAgeGroupLabel, translateExtraLabel, translateQuickLevel } from "../i18n/gameText.js";
 import { useI18n } from "../i18n/useI18n.js";
 import { getTimeToNextChallenge, getTodayKey } from "../utils/datePlayer.js";
 import { findBestMatch } from "../utils/fuzzyMatch.js";
@@ -443,7 +443,7 @@ export default function Game() {
             <div>
               <p className="eyebrow">
                 {weeklyTheme ? `${copy.weekly}: ${weeklyTheme.title}` : getModeLabel(mode.id, language, mode.label)}
-                {mode.daily ? ` · ${ageGroup.shortTitle}` : ""}
+                {mode.daily ? ` - ${translateAgeGroupLabel(ageGroup, language)}` : ""}
               </p>
               <h1>{getGameHeading({ isQuick, isArcade, quick, arcade, mode, currentItem, copy })}</h1>
             </div>
